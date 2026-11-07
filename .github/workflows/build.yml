@@ -25,37 +25,14 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: 'platform-tools'
-
-      - name: Setup Gradle 8.9
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
 
-      - name: Configure Android SDK
+      - name: Build Debug and Release APK
         run: |
-          sdkmanager --licenses
-
-          sdkmanager \
-            "platforms;android-36" \
-            "build-tools;36.0.0"
-
-      - name: Verify Android SDK
-        run: |
-          test -d "$ANDROID_HOME/platforms/android-36"
-          test -d "$ANDROID_HOME/build-tools/36.0.0"
-          sdkmanager --version
-
-      - name: Build Debug APK
-        run: |
-          gradle --no-daemon clean assembleDebug
-
-      - name: Build Release APK
-        run: |
-          gradle --no-daemon assembleRelease
+          gradle --no-daemon clean assembleDebug assembleRelease
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
