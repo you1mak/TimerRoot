@@ -6,6 +6,10 @@ android {
     namespace 'com.kpgc.timerroot'
     compileSdk 36
 
+    buildFeatures {
+        aidl true
+    }
+
     defaultConfig {
         applicationId 'com.kpgc.timerroot'
         minSdk 30
@@ -32,3 +36,6 @@ dependencies {
     implementation 'dev.rikka.shizuku:api:13.1.5'
     implementation 'dev.rikka.shizuku:provider:13.1.5'
 }
+
+
+
