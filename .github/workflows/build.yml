@@ -1,5 +1,5 @@
 
-name: Build TimerRoot
+name: TimerRoot Android Build
 
 on:
   push:
@@ -13,11 +13,11 @@ permissions:
 
 jobs:
   build:
-    name: Build Android APK
+    name: Build TimerRoot APK
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup JDK 17
@@ -26,35 +26,28 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Setup Gradle
+      - name: Setup Gradle 8.9
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK packages
+      - name: Configure Android SDK
         run: |
-          sdkmanager "platform-tools"
-          sdkmanager "platforms;android-36"
-          sdkmanager "build-tools;36.0.0"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+          yes | sdkmanager --licenses || true
+          sdkmanager "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;36.0.0"
 
-      - name: Download Timer binary
+      - name: Verify Android SDK
         run: |
-          mkdir -p app/src/main/assets
-          git clone --depth 1 \
-            https://github.com/YuKongA/CVE-2026-98260.git \
-            /tmp/CVE-2026-98260
-
-          test -f /tmp/CVE-2026-98260/timer/timer
-
-          cp /tmp/CVE-2026-98260/timer/timer \
-            app/src/main/assets/timer
+          test -d "$ANDROID_HOME/platforms/android-36"
+          test -d "$ANDROID_HOME/build-tools/36.0.0"
 
       - name: Build Debug APK
         run: |
-          gradle --no-daemon assembleDebug
+          gradle --no-daemon clean assembleDebug
 
       - name: Build Release APK
         run: |
